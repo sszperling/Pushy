@@ -1,10 +1,7 @@
 package dev.sszperling.pushy
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -13,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun DropDownList(
@@ -21,6 +19,7 @@ fun DropDownList(
     onExpandedChanged: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+	buttonContent: @Composable RowScope.() -> Unit = {},
     dropdownContent: @Composable ColumnScope.() -> Unit
 ) {
     BoxWithConstraints(modifier = modifier) {
@@ -31,13 +30,14 @@ fun DropDownList(
             enabled = enabled,
         ) {
             Text(title, modifier = Modifier.weight(1f))
+			buttonContent()
             // TODO ArrowDropUp
             Icon(Icons.Filled.ArrowDropDown, contentDescription = null)
         }
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { onExpandedChanged(false) },
-            modifier = widthModifier,
+            modifier = widthModifier.heightIn(max = 200.dp),
             content = dropdownContent,
         )
     }
