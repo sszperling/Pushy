@@ -38,9 +38,9 @@ class PushViewModel(private val scope: CoroutineScope) {
 	var device: String?
 		get() = selectedDevice
 		set(value) {
-			if (value != null && selectedDevice != value) {
+			if (selectedDevice != value) {
 				selectedDevice = value
-				rootedDevice = ensureAdbdRoot(value)
+				rootedDevice = value == null || ensureAdbdRoot(value)
 				updateReceivers()
 			}
 		}
@@ -99,7 +99,7 @@ class PushViewModel(private val scope: CoroutineScope) {
 		scope.launch {
 			try {
 				if (!valid) return@launch
-				val extras = preset!!.defaultExtras + extras.map { (k, v) -> k to v }.toMap()
+				val extras = preset!!.defaultExtras + extras.associate { (k, v) -> k to v }
 				doBroadcast(device!!, action, pkg!!, receiver!!, extras)
 			} finally {
 				pushing = false

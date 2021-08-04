@@ -4,6 +4,7 @@ import java.util.UUID.randomUUID
 
 private const val EXCLUDED_PKGS = "^(android|com\\.android|com\\.google|org\\.chromium)"
 private val ExcludedRegex = Regex(EXCLUDED_PKGS)
+private val ADBUnsafeRegex = Regex("([?&=])")
 
 fun ensureAdb() = "adb --version".runCommand().isSuccess
 
@@ -42,7 +43,7 @@ fun ensureAdbdRoot(deviceId: String): Boolean {
 fun doBroadcast(deviceId: String, action: String, packageId: String, receiver: String, extras: Map<String, String>) {
 	val extrasList = extras
 		.asSequence()
-		.map { (k, v) -> k to (if (v == UUID_PLACEHOLDER) randomUUID().toString() else v) }
+		.map { (k, v) -> k to (if (v == UUID_PLACEHOLDER) randomUUID().toString() else v.escaped()) }
 		.map { (k, v) -> "-e $k \"$v\"" }
 		.joinToString(" ")
 
@@ -50,4 +51,9 @@ fun doBroadcast(deviceId: String, action: String, packageId: String, receiver: S
 	with((base + extrasList).runCommand()) {
 		// TODO
 	}
+}
+
+private fun String.escaped() = replace(ADBUnsafeRegex) {
+	val (char) = it.destructured
+	"\\$char"
 }

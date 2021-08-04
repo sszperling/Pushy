@@ -3,15 +3,15 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.4.31"
-    id("org.jetbrains.compose") version "0.3.2" // "0.4.0-build171"
+    kotlin("jvm") version "1.5.21"
+    id("org.jetbrains.compose") version "1.0.0-alpha1"
 }
 
 group = "dev.sszperling"
 version = "1.0.0"
 
 repositories {
-    jcenter()
+    google()
     mavenCentral()
     maven { url = uri("https://maven.pkg.jetbrains.space/public/p/compose/dev") }
 }
@@ -21,7 +21,10 @@ dependencies {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "11"
+    kotlinOptions {
+		freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+		jvmTarget = "11"
+	}
 }
 
 compose.desktop {
