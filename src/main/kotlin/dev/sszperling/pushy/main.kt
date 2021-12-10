@@ -83,16 +83,14 @@ fun main() = themedApplication("Push Notification Sender") {
 					enabled = vm.devices.isNotEmpty(),
 					buttonContent = {
 						if (!vm.rootedDevice) {
-							BoxWithTooltip(tooltip = {
-								Tooltip {
-									Text(
-										"This device is not rooted.",
-										fontWeight = FontWeight.Bold,
-										maxLines = 1
-									)
-									Spacer(Modifier.height(8.dp))
-									Text("The push notification broadcast may not be properly sent.")
-								}
+							Tooltip(tooltip = {
+								Text(
+									"This device is not rooted.",
+									fontWeight = FontWeight.Bold,
+									maxLines = 1
+								)
+								Spacer(Modifier.height(8.dp))
+								Text("The push notification broadcast may not be properly sent.")
 							}) {
 								Icon(
 									Icons.Filled.Warning,
@@ -274,16 +272,18 @@ fun FormRow(
 }
 
 @Composable
-fun Tooltip(content: @Composable ColumnScope.() -> Unit) {
-	Surface(
-		modifier = Modifier.shadow(4.dp),
-		shape = RoundedCornerShape(4.dp)
-	) {
-		Column(
-			modifier = Modifier
-				.clip(MaterialTheme.shapes.medium)
-				.padding(8.dp),
-			content = content
-		)
-	}
+fun Tooltip(tooltip: @Composable ColumnScope.() -> Unit, content: @Composable () -> Unit) {
+	TooltipArea(tooltip = {
+		Surface(
+			modifier = Modifier.shadow(4.dp),
+			shape = RoundedCornerShape(4.dp)
+		) {
+			Column(
+				modifier = Modifier
+					.clip(MaterialTheme.shapes.medium)
+					.padding(8.dp),
+				content = tooltip
+			)
+		}
+	}, content = content)
 }

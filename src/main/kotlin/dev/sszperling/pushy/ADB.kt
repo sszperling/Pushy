@@ -5,6 +5,7 @@ import java.util.UUID.randomUUID
 private const val EXCLUDED_PKGS = "^(android|com\\.android|com\\.google|org\\.chromium)"
 private val ExcludedRegex = Regex(EXCLUDED_PKGS)
 private val ADBUnsafeRegex = Regex("([?&=])")
+private val Whitespace = Regex("\\s")
 
 fun ensureAdb() = "adb --version".runCommand().isSuccess
 
@@ -12,8 +13,9 @@ fun getAdbDevices(): List<String> = with("adb devices".runCommand()) {
 	if (isSuccess) {
 		val devicesList = output.substringAfter("List of devices attached").trim()
 		devicesList.lineSequence()
-			.filter { it.isNotEmpty() }
-			.map { it.split(Regex("\\s")).first() }
+			.filter(String::isNotEmpty)
+			.map(Whitespace::split)
+			.map(List<String>::first)
 			.toList()
 	} else {
 		listOf()
@@ -25,12 +27,11 @@ fun getReceivers(deviceId: String, action: String): Map<String, List<String>> = 
 ) {
 	if (isSuccess)
 		output.lineSequence()
-			.filter { it.isNotBlank() }
-			.filterNot { ExcludedRegex.containsMatchIn(it) }
+			.filter(String::isNotBlank)
+			.filterNot(ExcludedRegex::containsMatchIn)
 			.map { it.split("/") }
 			.filter { it.size == 2 }
-			.map { it[0] to it[1] }
-			.groupBy({ (k, _) -> k }, { (_, v) -> v })
+			.groupBy({ it[0] }, { it[1] })
 	else
 		emptyMap()
 }
